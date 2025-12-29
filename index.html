@@ -20,8 +20,9 @@
 			body {
 				display: grid;
 				background-color: #888;
+				overflow: hidden;
 			}
-			body > div {
+			body > .block {
 				width: 100%;
 				color: white;
 				font-size: 0.5vw;
@@ -30,19 +31,31 @@
 				align-content: center;
 				cursor: pointer;
 			}
-			body > div:hover {
+			body > .block:hover {
 				scale: 1.5;
 			}
-			body > div[open] {
+			body > .block[open] {
 				scale: 5;
 			}
 			code {
 				font-family: 'Courier New', Courier, monospace;
 				color: white;
 			}
+			#link {
+				position: absolute;
+				bottom: 0.2em;
+				right: 0.5em;
+				font-size: small;
+			}
 		</style>
 	</head>
-	<body></body>
+	<body>
+		<div id="link">
+			<a href="https://github.com/aidanwyber/Kleurwoorden" target="_blank"
+				>GitHub</a
+			>
+		</div>
+	</body>
 	<script>
 		async function main() {
 			fetch('colour_words.json', {
@@ -53,13 +66,18 @@
 				})
 				.then(function (colourWords) {
 					const n = Object.keys(colourWords).length;
-					const nCols = Math.ceil(Math.sqrt(n));
+					const asp = window.innerWidth / window.innerHeight;
+					const nCols =
+						asp >= 1
+							? Math.ceil(Math.sqrt(n))
+							: Math.ceil(Math.sqrt(n) * asp);
 					document.body.style.gridTemplateColumns = `repeat(${nCols}, 1fr)`;
 
 					for (let colourName in colourWords) {
 						const block = document.createElement('div');
 						block.style.backgroundColor = colourWords[colourName];
 						block.innerHTML = `${colourName}<br><code>${colourWords[colourName]}</code>`;
+						block.classList.add('block');
 						block.onclick = () => block.toggleAttribute('open');
 						block.onmouseleave = () =>
 							block.removeAttribute('open');
